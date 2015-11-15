@@ -6,6 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Brendan Batliner (bbatliner)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bbatliner/electron-wrapper.git"
+  },
+  "dependencies": {
+    "electron-packager": "^5.1.1",
+    "command-line-args": "^2.1.1"
+  }
 }
