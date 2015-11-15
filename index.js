@@ -5,16 +5,18 @@ var commandLineArgs = require('command-line-args');
 var usage = require('./usage.js');
 var generator = require('./src/generator.js');
 
-var cli = commandLineArgs(usage.args);
-var options = cli.parse();
+module.exports = function () {
+  var cli = commandLineArgs(usage.args);
+  var options = cli.parse();
 
-if (options.h || !options.url || !options.platform) {
-  return console.log(cli.getUsage(usage.options));
-}
+  if (options.h || !options.url || !options.platform) {
+    return console.log(cli.getUsage(usage.options));
+  }
 
-// Gets the "simple name" of a website. For example, http://google.com becomes google.
-var hostname = URL.parse(options.url).hostname;
-options.name = options.name || hostname.substring(0, ~hostname.indexOf('.') ? hostname.indexOf('.') : hostname.length);
+  // Gets the "simple name" of a website. For example, http://google.com becomes google.
+  var hostname = URL.parse(options.url).hostname;
+  options.name = options.name || hostname.substring(0, ~hostname.indexOf('.') ? hostname.indexOf('.') : hostname.length);
 
-options.dir = 'tmp_app_dir';
-generator(options);
+  options.dir = 'tmp_app_dir';
+  generator(options);
+};
