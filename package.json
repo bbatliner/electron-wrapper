@@ -2,7 +2,9 @@
   "name": "electron-wrapper",
   "version": "1.0.0",
   "description": "Wrap any website in a native Electron window.",
-  "main": "index.js",
+  "bin": {
+    "electron-wrapper": "index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
