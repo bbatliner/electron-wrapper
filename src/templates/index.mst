@@ -2,6 +2,7 @@
 
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
+var localShortcut = require('electron-localshortcut'); // Module to register keyboard shortcuts
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -25,8 +26,23 @@ app.on('ready', function() {
   // Create the browser window.
   mainWindow = new BrowserWindow({width: 800, height: 600, 'auto-hide-menu-bar': true, 'web-preferences': { 'node-integration': false }});
 
-  // and load the index.html of the app.
+  // and load the url ;)
   mainWindow.loadUrl('{{{url}}}');
+
+  // Register common navigation shortcuts
+  function goBack() {
+    if (mainWindow.webContents.canGoBack()) {
+      mainWindow.webContents.goBack();
+    }
+  }
+  function goForward() {
+    if (mainWindow.webContents.canGoForward()) {
+      mainWindow.webContents.goForward();
+    }
+  }
+  localShortcut.register(mainWindow, 'alt+left', goBack);
+  localShortcut.register(mainWindow, 'backspace', goBack);
+  localShortcut.register(mainWindow, 'alt+right', goForward);
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
