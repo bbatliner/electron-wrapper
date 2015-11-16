@@ -37,6 +37,7 @@ module.exports = function (options) {
     packager({
       dir: dir,
       name: options.name,
+      icon: options.icon,
       out: options.out,
       platform: options.platform,
       arch: options.arch,
