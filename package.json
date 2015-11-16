@@ -1,6 +1,6 @@
 {
   "name": "electron-wrapper",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Wrap any website in a native Electron window.",
   "bin": {
     "electron-wrapper": "index.js"
