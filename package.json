@@ -15,7 +15,8 @@
     "url": "git+https://github.com/bbatliner/electron-wrapper.git"
   },
   "dependencies": {
+    "command-line-args": "^2.1.1",
     "electron-packager": "^5.1.1",
-    "command-line-args": "^2.1.1"
+    "mustache": "^2.2.0"
   }
 }
