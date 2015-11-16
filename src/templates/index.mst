@@ -69,7 +69,7 @@ app.on('ready', function() {
   // Save the window bounds on close
   mainWindow.on('close', function() {
     var maximized = mainWindow.isMaximized();
-    var newData = data;
+    var newData = data || {};
     newData[hash] = { bounds: mainWindow.getBounds() };
     if (mainWindow.isMaximized()) {
       newData[hash].shouldBeMaximized = true;
