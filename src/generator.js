@@ -29,7 +29,7 @@ module.exports = function (options) {
   fs.writeFileSync(srcPath, src);
   fs.writeFileSync(pkgjsonPath, pkgjson);
 
-  // Write the electron-localshortcut node module from this app's node_modules folder
+  // Copy the electron-localshortcut node module from this app's node_modules folder
   ncp('./node_modules/electron-localshortcut', dir + '/node_modules/electron-localshortcut', function (err) {
     if (err) throw err;
 
@@ -37,6 +37,7 @@ module.exports = function (options) {
     packager({
       dir: dir,
       name: options.name,
+      out: options.out,
       platform: options.platform,
       arch: options.arch,
       version: options.version,
@@ -54,4 +55,3 @@ module.exports = function (options) {
     });
   });
 };
-  
