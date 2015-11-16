@@ -17,7 +17,7 @@ module.exports = function (options) {
   var pkgjsonPath = dir + '/package.json';
 
   // Generate the Electron source for the url
-  var src = Mustache.render(fs.readFileSync(path.join(__dirname, templatesDir, 'index.mst'), 'utf8'), { url: options.url });
+  var src = Mustache.render(fs.readFileSync(path.join(__dirname, templatesDir, 'index.mst'), 'utf8'), { url: options.url, name: options.name });
   // Generate the simplest package.json possible that tells Electron where to find the app.
   var pkgjson = Mustache.render(fs.readFileSync(path.join(__dirname, templatesDir, 'package.json.mst'), 'utf8'), { srcName: srcName });
 
