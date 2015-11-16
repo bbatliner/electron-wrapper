@@ -1,5 +1,7 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
 var app = require('app');  // Module to control application life.
 var BrowserWindow = require('browser-window');  // Module to create native browser window.
 var localShortcut = require('electron-localshortcut'); // Module to register keyboard shortcuts
@@ -23,8 +25,20 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+  // Thanks imskull! (https://github.com/atom/electron/issues/526#issuecomment-132942967)
+  // Try to load saved window bounds
+  var initPath = path.join(app.getDataPath(), 'init.json');
+  var data;
+  try {
+    data = JSON.parse(fs.readFileSync(initPath, 'utf8'));
+  }
+  catch(e) { }
+
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600, 'auto-hide-menu-bar': true, 'web-preferences': { 'node-integration': false }});
+  var windowOpts = (data && data.bounds) ? data.bounds : { width: 800, height: 600 };
+  windowOpts['auto-hide-menu-bar'] = true;
+  windowOpts['web-preferences'] = { 'node-integration': false };
+  mainWindow = new BrowserWindow(windowOpts);
 
   // and load the url ;)
   mainWindow.loadUrl('{{{url}}}');
@@ -41,8 +55,15 @@ app.on('ready', function() {
     }
   }
   localShortcut.register(mainWindow, 'alt+left', goBack);
-  localShortcut.register(mainWindow, 'backspace', goBack);
   localShortcut.register(mainWindow, 'alt+right', goForward);
+
+  // Save the window bounds on close
+  mainWindow.on('close', function() {
+    var data = {
+      bounds: mainWindow.getBounds()
+    };
+    fs.writeFileSync(initPath, JSON.stringify(data));
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function() {
