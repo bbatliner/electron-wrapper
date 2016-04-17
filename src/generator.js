@@ -17,9 +17,11 @@ module.exports = function (options) {
   var pkgjsonPath = dir + '/package.json';
 
   // Generate the Electron source for the url
-  var src = Mustache.render(fs.readFileSync(path.join(__dirname, templatesDir, 'index.mst'), 'utf8'), { url: options.url, name: options.name });
+  var srcTemplate = fs.readFileSync(path.join(__dirname, templatesDir, 'index.mst'), 'utf8');
+  var src = Mustache.render(srcTemplate, { url: options.url, name: options.name });
   // Generate the simplest package.json possible that tells Electron where to find the app.
-  var pkgjson = Mustache.render(fs.readFileSync(path.join(__dirname, templatesDir, 'package.json.mst'), 'utf8'), { srcName: srcName });
+  var pkgjsonTemplate = fs.readFileSync(path.join(__dirname, templatesDir, 'package.json.mst'), 'utf8');
+  var pkgjson = Mustache.render(pkgjsonTemplate, { srcName: srcName });
 
   // Write the src and package.json to a temp dir
   if (!fs.existsSync(dir)) {
@@ -29,30 +31,36 @@ module.exports = function (options) {
   fs.writeFileSync(srcPath, src);
   fs.writeFileSync(pkgjsonPath, pkgjson);
 
-  // Copy the electron-localshortcut node module from this app's node_modules folder
-  ncp('./node_modules/electron-localshortcut', dir + '/node_modules/electron-localshortcut', function (err) {
-    if (err) throw err;
+  var cleanUp = function cleanUp() {
+    rimraf.sync(dir);
+  };
 
-    // Build the electron app!
-    packager({
-      dir: dir,
-      name: options.name,
-      icon: options.icon,
-      out: options.out,
-      platform: options.platform,
-      arch: options.arch,
-      version: options.version,
-      overwrite: options.overwrite
-    }, function (err, appPath) {
+  // Copy the electron-localshortcut node module from this app's node_modules folder
+  try {
+    ncp(path.join(__dirname, '../node_modules/electron-localshortcut'), dir + '/node_modules/electron-localshortcut', function (err) {
       if (err) throw err;
-      // Clean up
-      fs.unlinkSync(srcPath);
-      fs.unlinkSync(pkgjsonPath);
-      rimraf.sync(dir);
-      // Show the user the location if successful
-      if (appPath.length) {
-        console.log('App built at', appPath[0]);
-      }
+
+      // Build the electron app!
+      packager({
+        dir: dir,
+        name: options.name,
+        icon: options.icon,
+        out: options.out,
+        platform: options.platform,
+        arch: options.arch,
+        version: options.version,
+        overwrite: options.overwrite
+      }, function (err, appPath) {
+        if (err) throw err;
+        cleanUp();
+        // Show the user the location if successful
+        if (appPath.length) {
+          console.log('App built at', appPath[0]);
+        }
+      });
     });
-  });
+  } catch (err) {
+    cleanUp();
+    throw err;
+  }
 };
