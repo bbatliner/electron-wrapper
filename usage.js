@@ -21,7 +21,7 @@ module.exports = {
     { name: 'out', alias: 'o', type: String, description: 'The output directory of the app.\nDefault: current directory', defaultValue: '.' },
     { name: 'platform', alias: 'p', type: String, description: 'The platform to target (linux, win32, darwin, all)' },
     { name: 'arch', alias: 'a', type: String, description: 'The system architecture to target. (ia32, x64, all)\nDefault: x64', defaultValue: 'x64' },
-    { name: 'version', alias: 'v', type: String, description: 'The Electron version to build with.\nDefault: 0.34.3', defaultValue: '0.34.3' },
+    { name: 'version', alias: 'v', type: String, description: 'The Electron version to build with.\nDefault: 0.37.6', defaultValue: '0.37.6' },
     { name: 'overwrite', type: Boolean, description: 'Overwrite existing application(s), if they are already built.' }
   ]
 };

@@ -66,6 +66,17 @@ app.on('ready', function() {
   localShortcut.register(mainWindow, 'alt+left', goBack);
   localShortcut.register(mainWindow, 'alt+right', goForward);
 
+  // Open new pages in the default browser
+  var handleRedirect = function(e, url) {
+  if (url != mainWindow.webContents.getURL()) {
+      e.preventDefault();
+      require('electron').shell.openExternal(url);
+    }
+  };
+
+  mainWindow.webContents.on('will-navigate', handleRedirect);
+  mainWindow.webContents.on('new-window', handleRedirect);
+
   // Save the window bounds on close
   mainWindow.on('close', function() {
     var maximized = mainWindow.isMaximized();
