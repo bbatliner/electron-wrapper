@@ -65,6 +65,7 @@ app.on('ready', function() {
   }
   localShortcut.register(mainWindow, 'alt+left', goBack);
   localShortcut.register(mainWindow, 'alt+right', goForward);
+  localShortcut.register(mainWindow, 'F5', mainWindow.webContents.reload);
 
   {{^openLocally}}
   // Open new pages in the default browser
