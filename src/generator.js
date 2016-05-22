@@ -15,6 +15,7 @@ module.exports = function (options) {
   var dir = options.dir || 'tmp_app_dir';
   var srcPath = dir + '/' + srcName;
   var pkgjsonPath = dir + '/package.json';
+  var wrappedWindowPath = dir + '/wrappedWindow.js';
 
   // Generate the Electron source for the url
   var srcTemplate = fs.readFileSync(path.join(__dirname, templatesDir, 'index.mst'), 'utf8');
@@ -22,6 +23,8 @@ module.exports = function (options) {
   // Generate the simplest package.json possible that tells Electron where to find the app.
   var pkgjsonTemplate = fs.readFileSync(path.join(__dirname, templatesDir, 'package.json.mst'), 'utf8');
   var pkgjson = Mustache.render(pkgjsonTemplate, { srcName: srcName });
+  // Read wrappedWindow.js
+  var wrappedWindow = fs.readFileSync(path.join(__dirname, templatesDir, 'wrappedWindow.js'), 'utf8');
 
   // Write the src and package.json to a temp dir
   if (!fs.existsSync(dir)) {
@@ -30,6 +33,7 @@ module.exports = function (options) {
   mkdirp.sync(dir + '/node_modules');
   fs.writeFileSync(srcPath, src);
   fs.writeFileSync(pkgjsonPath, pkgjson);
+  fs.writeFileSync(wrappedWindowPath, wrappedWindow);
 
   var cleanUp = function cleanUp() {
     rimraf.sync(dir);

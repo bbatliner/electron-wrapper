@@ -42,6 +42,7 @@ module.exports = {
       name: 'openLocally',
       type: Boolean,
       description: 'Whether to open external links within Electron. If false, external links will open in your default browser.',
+      defaultValue: false
     },
     {
       name: 'out',

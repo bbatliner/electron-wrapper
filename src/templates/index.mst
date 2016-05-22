@@ -1,11 +1,7 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
-var crypto = require('crypto');
 var app = require('app');  // Module to control application life.
-var BrowserWindow = require('browser-window');  // Module to create native browser window.
-var localShortcut = require('electron-localshortcut'); // Module to register keyboard shortcuts
+var WrappedWindow = require('./wrappedWindow');
 
 // Report crashes to our server.
 require('crash-reporter').start();
@@ -18,7 +14,7 @@ var mainWindow = null;
 app.on('window-all-closed', function() {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform != 'darwin') {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
@@ -26,89 +22,10 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
-  // Thanks imskull! (https://github.com/atom/electron/issues/526#issuecomment-132942967)
-  // Try to load saved window bounds
-  var initPath = path.join(app.getDataPath(), 'init.json');
-  var data;
-  try {
-    data = JSON.parse(fs.readFileSync(initPath, 'utf8'));
-  }
-  catch(e) { }
-
-  var sha = crypto.createHash('sha256');
-  sha.update('{{{name}}}');
-  var hash = sha.digest('hex');
-
-  // Create the browser window.
-  var windowOpts = (data && data[hash] && data[hash].bounds) ? data[hash].bounds : { width: 800, height: 600 };
-  windowOpts['auto-hide-menu-bar'] = true;
-  windowOpts['web-preferences'] = { 'node-integration': false };
-  mainWindow = new BrowserWindow(windowOpts);
-
-  if (data && data[hash] && data[hash].shouldBeMaximized) {
-    mainWindow.maximize();
-  }
-
-  // and load the url ;)
-  mainWindow.loadUrl('{{{url}}}');
-
-  // Register common navigation shortcuts
-  function goBack() {
-    if (mainWindow.webContents.canGoBack()) {
-      mainWindow.webContents.goBack();
-    }
-  }
-  function goForward() {
-    if (mainWindow.webContents.canGoForward()) {
-      mainWindow.webContents.goForward();
-    }
-  }
-  localShortcut.register(mainWindow, 'alt+left', goBack);
-  localShortcut.register(mainWindow, 'alt+right', goForward);
-  localShortcut.register(mainWindow, 'F5', mainWindow.webContents.reload);
-
-  {{^openLocally}}
-  // Open EXTERNAL LINKS in the default browser
-  // Example: electron-wrap messenger.com
-  // Links on messenger.com that link to messenger.com will be followed in-app
-  // Links on messenger.com that link elsewhere (e.g., imgur.com) will be opened externally
-
-  // http://stackoverflow.com/a/23945027/5136076
-  function extractDomain(url) {
-    var domain;
-    //find & remove protocol (http, ftp, etc.) and get domain
-    if (url.indexOf("://") > -1) {
-      domain = url.split('/')[2];
-    }
-    else {
-      domain = url.split('/')[0];
-    }
-
-    //find & remove port number
-    domain = domain.split(':')[0];
-
-    return domain;
-  }
-  var handleRedirect = function(e, url) {
-    if (extractDomain(url) !== extractDomain(mainWindow.webContents.getURL())) {
-      e.preventDefault();
-      require('electron').shell.openExternal(url);
-    }
-  };
-
-  mainWindow.webContents.on('will-navigate', handleRedirect);
-  mainWindow.webContents.on('new-window', handleRedirect);
-  {{/openLocally}}
-
-  // Save the window bounds on close
-  mainWindow.on('close', function() {
-    var maximized = mainWindow.isMaximized();
-    var newData = data || {};
-    newData[hash] = { bounds: mainWindow.getBounds() };
-    if (mainWindow.isMaximized()) {
-      newData[hash].shouldBeMaximized = true;
-    }
-    fs.writeFileSync(initPath, JSON.stringify(newData));
+  mainWindow = WrappedWindow({
+    name: '{{{name}}}',
+    url: '{{{url}}}',
+    openLocally: {{openLocally}}
   });
 
   // Emitted when the window is closed.
