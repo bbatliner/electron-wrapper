@@ -68,9 +68,29 @@ app.on('ready', function() {
   localShortcut.register(mainWindow, 'F5', mainWindow.webContents.reload);
 
   {{^openLocally}}
-  // Open new pages in the default browser
+  // Open EXTERNAL LINKS in the default browser
+  // Example: electron-wrap messenger.com
+  // Links on messenger.com that link to messenger.com will be followed in-app
+  // Links on messenger.com that link elsewhere (e.g., imgur.com) will be opened externally
+
+  // http://stackoverflow.com/a/23945027/5136076
+  function extractDomain(url) {
+    var domain;
+    //find & remove protocol (http, ftp, etc.) and get domain
+    if (url.indexOf("://") > -1) {
+      domain = url.split('/')[2];
+    }
+    else {
+      domain = url.split('/')[0];
+    }
+
+    //find & remove port number
+    domain = domain.split(':')[0];
+
+    return domain;
+  }
   var handleRedirect = function(e, url) {
-    if (url != mainWindow.webContents.getURL()) {
+    if (extractDomain(url) !== extractDomain(mainWindow.webContents.getURL())) {
       e.preventDefault();
       require('electron').shell.openExternal(url);
     }
